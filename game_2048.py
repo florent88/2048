@@ -93,20 +93,25 @@ def grid_move(grid, d):
     """
     d = DIRECTIONS[d]
     x, y = d[0], d[1]
-    # Gauche, fonctionnel
+    # Gauche
     if y == -1:
         for i in range(len(grid)):
-            temp = False
+            temp, comp = False, 0 # Variable pour les mêmes conditions que le jeu réel
             j = 0
             while j < len(grid):
+                if temp:
+                    comp += 1
                 # tuile au bord ou tuile vide
                 if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
                     j += 1
                 # Tuile de même numéro
                 elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp == True:
+                    if temp and comp < 2:
                         j += 1
                         temp = False
+                    elif comp > 2:
+                        grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
+                        j += 1
                     else:
                         grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
                         temp = True
@@ -117,25 +122,27 @@ def grid_move(grid, d):
                     j -= 1
                 else:
                     j += 1
-    # Droite, fonctionnel
+    # Droite
     if y == 1:
         for i in range(len(grid)):
-            temp = False
+            temp, comp = False, 0
             j = len(grid) - 1
             while j >= 0:
-                # tuile au bord ou tuile vide
+                if temp:
+                    comp += 1
                 if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
                     j -= 1
-                # Tuile de même numéro
                 elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp == True:
+                    if temp and comp < 2:
                         j -= 1
                         temp = False
+                    elif comp > 2:
+                        grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
+                        j -= 1
                     else:
                         grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
                         temp = True
                         j += 1
-                # Tuile vide à doite donc on déplace
                 elif grid_get_next(grid, i, j, d) == 0:
                     grid[i][j + 1], grid[i][j] = grid[i][j], grid[i][j + 1]
                     j += 1
