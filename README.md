@@ -18,8 +18,10 @@ Only for personal use
 
 ## Idle version
 To play with this version, execute `textual_2048.py` file in Idle
+
 ![Idle version](img/idle.jpg)
 
 ## Graphical version
 Graphical version use tkinter module, to play with this version, execute `graphical_2048.py` file in Idle
+
 ![Graphical version](img/graphic.jpg)

@@ -1,6 +1,7 @@
 # Module graphique
 
 from tkinter import *
+from tkinter.messagebox import *
 from game_2048 import *
 
 fenetre = None
@@ -26,6 +27,19 @@ TILES_SIZE = GAME_SIZE // 4
   
 commands = { "Up" : "up", "Left" : "left", "Right" : "right", "Down" : "down" }
 
+def new_game():
+    showinfo("Error", "Coming soon")
+
+def load_game():
+    showinfo("Error", "Coming soon")
+
+def callback():
+    if askyesno("Quitter la partie", "Êtes-vous sûr de vouloir faire ça?"):
+        fenetre.destroy()
+
+def about():
+    showinfo("A propos", "Blabla")
+
 def main():
     """
     launch the graphical game
@@ -33,10 +47,27 @@ def main():
     UC : none
     """
     global fenetre, gr_grid,grid
-    fenetre = Frame()
+    
+    fenetre = Tk()
+    fenetre.title('2048')
+    # Menu
+    menubar = Menu(fenetre)
+    
+    partie = Menu(menubar, tearoff = 0)
+    partie.add_command(label = "Nouvelle", command = new_game)
+    partie.add_command(label = "Charger", command = load_game)
+    partie.add_separator()
+    partie.add_command(label = "Quitter", command = callback)
+    menubar.add_cascade(label = "Partie", menu = partie)
+
+    aide = Menu(menubar, tearoff = 0)
+    aide.add_command(label = "A propos", command = about)
+    menubar.add_cascade(label = "Aide", menu = aide)
+    
+    fenetre.config(menu = menubar)
+    # Grille
     fenetre.grid()
-    fenetre.master.title('2048')
-    fenetre.master.bind("<Key>", key_pressed)
+    fenetre.bind("<Key>", key_pressed)
     background = Frame(fenetre, bg = GAME_BG,
                        width=GAME_SIZE, height=GAME_SIZE)
     background.grid()
