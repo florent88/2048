@@ -6,17 +6,17 @@ import pickle
 VALUE = [2, 2, 2, 2, 2, 2, 4, 4, 4, 4] # 2 plus présent que les 4
 DIRECTIONS = {"right" : (0,1), "left" : (0,-1), "up" : (-1,0), "down" : (1,0)}
 
-def grid_init():
+def grid_init(n = 4):
     """
     Initie une grille vierge
 
     valeur renvoyée: (list) la grille sous forme de liste
     """
     grid = []
-    # Taille de la grille: 4x4
-    for i in range(4):
+    # Grille n x n
+    for i in range(n):
         # 0 pour représenter les cases vides
-        grid += [list(0 for j in range(4))]
+        grid += [list(0 for j in range(n))]
     grid_add_new_tile(grid)
     return grid
 
@@ -91,12 +91,13 @@ def grid_move(grid, d):
     paramètre grid: (list) la grille sous forme de liste
     paramètre d: (str) le déplacement à suivre
     """
+    moved = False
     d = DIRECTIONS[d]
     x, y = d[0], d[1]
     # Gauche
     if y == -1:
         for i in range(len(grid)):
-            temp, comp = False, 0 # Variable pour les mêmes conditions que le jeu réel
+            temp, comp = False, 0
             j = 0
             while j < len(grid):
                 if temp:
@@ -106,24 +107,27 @@ def grid_move(grid, d):
                     j += 1
                 # Tuile de même numéro
                 elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp < 2:
+                    if temp and comp <= 2:
                         j += 1
                         temp = False
                     elif comp > 2:
                         grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
                         j += 1
                     else:
                         grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
                         temp = True
                         j -= 1
                 # Tuile vide à gauche donc on déplace
                 elif grid_get_next(grid, i, j, d) == 0:
                     grid[i][j - 1], grid[i][j] = grid[i][j], grid[i][j - 1]
+                    moved = True
                     j -= 1
                 else:
                     j += 1
     # Droite
-    if y == 1:
+    elif y == 1:
         for i in range(len(grid)):
             temp, comp = False, 0
             j = len(grid) - 1
@@ -133,21 +137,83 @@ def grid_move(grid, d):
                 if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
                     j -= 1
                 elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp < 2:
+                    if temp and comp <= 2:
                         j -= 1
                         temp = False
                     elif comp > 2:
                         grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
                         j -= 1
                     else:
                         grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
                         temp = True
                         j += 1
                 elif grid_get_next(grid, i, j, d) == 0:
                     grid[i][j + 1], grid[i][j] = grid[i][j], grid[i][j + 1]
+                    moved = True
                     j += 1
                 else:
                     j -= 1
+    # Up
+    elif x == -1:
+        for j in range(len(grid)):
+            temp, comp = False, 0
+            i = 0
+            while i < len(grid):
+                if temp:
+                    comp += 1
+                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
+                    i += 1
+                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
+                    if temp and comp <= 2:
+                        i += 1
+                        temp = False
+                    elif comp > 2:
+                        grid[i - 1][j], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
+                        i += 1
+                    else:
+                        grid[i - 1][j], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
+                        temp = True
+                        i -= 1
+                elif grid_get_next(grid, i, j, d) == 0:
+                    grid[i - 1][j], grid[i][j] = grid[i][j], grid[i - 1][j]
+                    moved = True
+                    i -= 1
+                else:
+                    i += 1
+    # Down
+    elif x == 1:
+        for j in range(len(grid)):
+            temp, comp = False, 0
+            i = len(grid) - 1
+            while i >= 0:
+                if temp:
+                    comp += 1
+                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
+                    i -= 1
+                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
+                    if temp and comp <= 2:
+                        i -= 1
+                        temp = False
+                    elif comp > 2:
+                        grid[i + 1][j], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
+                        i -= 1
+                    else:
+                        grid[i + 1][j], grid[i][j] = grid[i][j]*2, 0
+                        moved = True
+                        temp = True
+                        i += 1
+                elif grid_get_next(grid, i, j, d) == 0:
+                    grid[i + 1][j], grid[i][j] = grid[i][j], grid[i + 1][j]
+                    moved = True
+                    i += 1
+                else:
+                    i -= 1
+    return (grid, moved)
                 
 
 def grid_add_new_tile(grid):

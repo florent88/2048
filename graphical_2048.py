@@ -1,15 +1,4 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-"""
-
-:author: FIL - IEEA - Univ. Lille1.fr <http://portail.fil.univ-lille1.fr>_
-:completed by:
-
-:date: 2017, march
-
-Graphical interface to play 2048
-"""
+# Module graphique
 
 from tkinter import *
 from game_2048 import *
@@ -77,7 +66,7 @@ def grid_display(grid):
     global gr_grid, fenetre
     for i in range(4):
         for j in range(4):
-            number= grid_get_value(grid,i,j)
+            number= grid_get_value(grid, (i, j))
             if number == 0:
                 gr_grid[i][j].configure(text="", bg=TILE_EMPTY_BG)
             else:
@@ -96,8 +85,10 @@ def key_pressed(event):
     
     key = event.keysym
     if key in commands:
-        grid = grid_move(grid, commands[key])
-        grid_add_new_tile(grid)
+        grid_temp, has_moved = grid_move(grid, commands[key])
+        if has_moved:
+            grid = grid_temp
+            grid_add_new_tile(grid)
         if is_grid_over(grid):
             print("You loose !!!")
         if grid_get_max_value(grid) == 2048:

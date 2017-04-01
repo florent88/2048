@@ -19,9 +19,16 @@ def play():
     grid = grid_init()
     grid_print(grid)
     while not is_grid_over(grid) and grid_get_max_value(grid) < 2048:
+        # Lecture de la direction souhaitée
         move = read_next_move()
-        grid_move(grid, commands[move])
+        grid_temp, has_moved = grid_move(grid, commands[move])
+        # Aucun déplacement possible dans la direction d donc on demande une autre direction
+        if not has_moved:
+            continue
+        grid = grid_temp
+        # On ajoute une tuile
         grid_add_new_tile(grid)
+        # Affichage de la grille
         grid_print(grid)
     if grid_get_max_value(grid) == 2048:
         print("Vous avez gagné !!")
