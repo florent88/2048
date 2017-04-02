@@ -1,9 +1,8 @@
 # Module game 2048
 
-import random
-import pickle
+import random, pickle
 
-VALUE = [2, 2, 2, 2, 2, 2, 4, 4, 4, 4] # 2 plus présent que les 4
+VALUE = [2, 2, 2, 2, 2, 2, 2, 4, 4, 4] # 2 plus présent que les 4 (70 - 30)
 DIRECTIONS = {"right" : (0,1), "left" : (0,-1), "up" : (-1,0), "down" : (1,0)}
 
 def grid_init(n = 4):
@@ -90,6 +89,11 @@ def grid_move(grid, d):
 
     paramètre grid: (list) la grille sous forme de liste
     paramètre d: (str) le déplacement à suivre
+
+    Exemples:
+    >>> grid = [[4, 4, 2, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+    >>> grid, x = grid_move(grid, "right")
+    >>> grid
     """
     moved = False
     d = DIRECTIONS[d]
@@ -97,65 +101,47 @@ def grid_move(grid, d):
     # Gauche
     if y == -1:
         for i in range(len(grid)):
-            temp, comp = False, 0
-            j = 0
-            while j < len(grid):
-                if temp:
-                    comp += 1
-                # tuile au bord ou tuile vide
-                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
-                    j += 1
-                # Tuile de même numéro
-                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp <= 2:
-                        j += 1
-                        temp = False
-                    elif comp > 2:
-                        grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        j += 1
+            res, k, prev = [0, 0, 0, 0], 0, None
+            for j in range(len(grid[i])):
+                # Tuile non vide
+                if grid[i][j] != 0:
+                    if prev == None:
+                        prev = grid[i][j]
                     else:
-                        grid[i][j - 1], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        temp = True
-                        j -= 1
-                # Tuile vide à gauche donc on déplace
-                elif grid_get_next(grid, i, j, d) == 0:
-                    grid[i][j - 1], grid[i][j] = grid[i][j], grid[i][j - 1]
-                    moved = True
-                    j -= 1
-                else:
-                    j += 1
+                        # Tuile à gauche de même taille donc on les additionne
+                        if prev == grid[i][j]:
+                            res[k] = grid[i][j] * 2
+                            k += 1
+                            prev = None
+                        # Sinon on la décale
+                        else:
+                            res[k] = prev
+                            k += 1
+                            prev = grid[i][j]
+            if prev != None:
+                res[k] = prev
+            grid[i] = res
     # Droite
     elif y == 1:
         for i in range(len(grid)):
-            temp, comp = False, 0
-            j = len(grid) - 1
-            while j >= 0:
-                if temp:
-                    comp += 1
-                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
-                    j -= 1
-                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp <= 2:
-                        j -= 1
-                        temp = False
-                    elif comp > 2:
-                        grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        j -= 1
+            res, k, prev = [0, 0, 0, 0], len(grid[i]) - 1, None
+            for j in range(-1, -len(grid[i]) - 1, -1):
+                if grid[i][j] != 0:
+                    if prev == None:
+                        prev = grid[i][j]
                     else:
-                        grid[i][j + 1], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        temp = True
-                        j += 1
-                elif grid_get_next(grid, i, j, d) == 0:
-                    grid[i][j + 1], grid[i][j] = grid[i][j], grid[i][j + 1]
-                    moved = True
-                    j += 1
-                else:
-                    j -= 1
-    # Up
+                        if prev == grid[i][j]:
+                            res[k] = grid[i][j] * 2
+                            k -= 1
+                            prev = None
+                        else:
+                            res[k] = prev
+                            k -= 1
+                            prev = grid[i][j]
+            if prev != None:
+                res[k] = prev
+            grid[i] = res
+    # Up - TODO
     elif x == -1:
         for j in range(len(grid)):
             temp, comp = False, 0
@@ -184,7 +170,7 @@ def grid_move(grid, d):
                     i -= 1
                 else:
                     i += 1
-    # Down
+    # Down - TODO
     elif x == 1:
         for j in range(len(grid)):
             temp, comp = False, 0

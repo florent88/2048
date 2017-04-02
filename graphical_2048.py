@@ -20,7 +20,7 @@ TILES_FG_COLOR = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
 TILE_EMPTY_BG = "#9e948a"
 TILES_FONT = {"Verdana", 40, "bold"}
 
-GAME_SIZE = 600
+GAME_SIZE = 800
 GAME_BG = "#92877d" 
 TILES_SIZE = GAME_SIZE // 4
 
@@ -40,6 +40,10 @@ def callback():
 def about():
     showinfo("A propos", "Blabla")
 
+def score():
+    global grid
+    return str(grid_score(grid))
+
 def main():
     """
     launch the graphical game
@@ -50,21 +54,6 @@ def main():
     
     fenetre = Tk()
     fenetre.title('2048')
-    # Menu
-    menubar = Menu(fenetre)
-    
-    partie = Menu(menubar, tearoff = 0)
-    partie.add_command(label = "Nouvelle", command = new_game)
-    partie.add_command(label = "Charger", command = load_game)
-    partie.add_separator()
-    partie.add_command(label = "Quitter", command = callback)
-    menubar.add_cascade(label = "Partie", menu = partie)
-
-    aide = Menu(menubar, tearoff = 0)
-    aide.add_command(label = "A propos", command = about)
-    menubar.add_cascade(label = "Aide", menu = aide)
-    
-    fenetre.config(menu = menubar)
     # Grille
     fenetre.grid()
     fenetre.bind("<Key>", key_pressed)
@@ -86,6 +75,24 @@ def main():
         gr_grid.append(gr_line)
     grid = grid_init()
     grid_display(grid)
+    # Menu
+    menubar = Menu(fenetre)
+    
+    partie = Menu(menubar, tearoff = 0)
+    partie.add_command(label = "Nouvelle", command = new_game)
+    partie.add_command(label = "Charger", command = load_game)
+    partie.add_separator()
+    partie.add_command(label = "Quitter", command = callback)
+    menubar.add_cascade(label = "Partie", menu = partie)
+
+    aide = Menu(menubar, tearoff = 0)
+    aide.add_command(label = "A propos", command = about)
+    menubar.add_cascade(label = "Aide", menu = aide)
+
+    menubar.add_cascade(label = "Score: "+str(12))
+    
+    fenetre.config(menu = menubar)
+    # Répétition
     fenetre.mainloop()
 
 def grid_display(grid):
