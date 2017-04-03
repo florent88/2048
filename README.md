@@ -1,7 +1,7 @@
 # 2048
 
 ![](https://img.shields.io/badge/build-not%20working-red.svg)
-![](https://img.shields.io/badge/release-v1.2-brightgreen.svg)
+![](https://img.shields.io/badge/release-v1.3-brightgreen.svg)
 ![](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
@@ -13,7 +13,7 @@ Only for personal use
 
 ## Idle version
 To play with this version, execute `textual_2048.py` file in Idle
-- [ ] Basic game
+- [x] Basic game
 - [x] Score
 - [ ] Save / Load Game
 - [ ] Leaderboard
@@ -24,7 +24,7 @@ To play with this version, execute `textual_2048.py` file in Idle
 
 ## Graphical version
 Graphical version use tkinter, to play with this version, execute `graphical_2048.py` file in Idle
-- [ ] Basic game
+- [x] Basic game
 - [ ] Score
 - [ ] Save / Load Game
 - [ ] Leaderboard

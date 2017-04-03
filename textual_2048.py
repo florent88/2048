@@ -1,8 +1,8 @@
-# 2048
+# Module idle 2048
 
 from game_2048 import *
 
-commands = { "U" : "up", "L" : "left", "R" : "right", "D" : "down" }
+commands = {"U": "up", "L": "left", "R": "right", "D": "down" }
 
 def read_next_move():
     """
@@ -18,15 +18,16 @@ def read_next_move():
 def play():
     grid = grid_init()
     grid_print(grid)
-    while not is_grid_over(grid) and grid_get_max_value(grid) < 2048:
+    # Arrêt si la grille est pleine ou aucun mouvements possibles
+    while not is_grid_over(grid) or True in move_possible(grid):
         # Lecture de la direction souhaitée
         move = read_next_move()
-        grid_temp, has_moved = grid_move(grid, commands[move])
-        # Aucun déplacement possible dans la direction d donc on demande une autre direction
-        if not has_moved:
+        new_grid  = grid_move(grid, commands[move])
+        # Pas de déplacement dans la direction d donc on demande une autre direction
+        if new_grid == grid:
             continue
-        grid = grid_temp
-        # On ajoute une tuile
+        grid = new_grid
+        # Ajout d'une nouvelle tuile
         grid_add_new_tile(grid)
         # Affichage de la grille
         grid_print(grid)

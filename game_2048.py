@@ -3,9 +3,9 @@
 import random, pickle
 
 VALUE = [2, 2, 2, 2, 2, 2, 2, 4, 4, 4] # 2 plus présent que les 4 (70 - 30)
-DIRECTIONS = {"right" : (0,1), "left" : (0,-1), "up" : (-1,0), "down" : (1,0)}
+DIRECTIONS = {"right": (0,1), "left": (0,-1), "up": (-1,0), "down": (1,0)}
 
-def grid_init(n = 4):
+def grid_init(n=4):
     """
     Initie une grille vierge
 
@@ -48,7 +48,7 @@ def grid_print(grid):
     print('-'*(5 + size_tile * 4))
     for line in grid:
         for value in line:
-            print('|{:{align}{width}}'.format(value, align = '^', width = str(size_tile)), end = '')
+            print('|{:{align}{width}}'.format(value, align='^', width=str(size_tile)), end = '')
         print('|')
         print('-'*(5 + size_tile * 4))
 
@@ -83,124 +83,90 @@ def grid_get_max_value(grid):
     """
     return max(all_value(grid))
 
+def reverse(grid):
+    reverse_grid = []
+    for j in range(len(grid)):
+        reverse_grid.append([grid[i][j] for i in range(len(grid))])
+    return reverse_grid
+
+def transpose(reverse_grid):
+    grid = []
+    for j in range(len(reverse_grid)):
+        grid.append([reverse_grid[i][j] for i in range(len(reverse_grid))])
+    return grid
+
+def move_left(row):
+    new_row, k, prev = [0 for i in range(len(row))], 0, None
+    for i in range(len(row)):
+        # Tuile non vide
+        if row[i] != 0:
+            if prev is None:
+                prev = row[i]
+            else:
+                # Tuile de même taille donc on les additionne
+                if prev == row[i]:
+                    new_row[k] = row[i]*2
+                    k += 1
+                    prev = None
+                # Sinon on la décale
+                else:
+                    new_row[k] = prev
+                    k += 1
+                    prev = row[i]
+    if prev is not None:
+        new_row[k] = prev
+    return new_row
+
 def grid_move(grid, d):
     """
     Effectue le déplacement de la grille suivant la direction d
 
     paramètre grid: (list) la grille sous forme de liste
     paramètre d: (str) le déplacement à suivre
-
-    Exemples:
-    >>> grid = [[4, 4, 2, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-    >>> grid, x = grid_move(grid, "right")
-    >>> grid
     """
-    moved = False
+    new = grid.copy()
     d = DIRECTIONS[d]
     x, y = d[0], d[1]
     # Gauche
     if y == -1:
         for i in range(len(grid)):
-            res, k, prev = [0, 0, 0, 0], 0, None
-            for j in range(len(grid[i])):
-                # Tuile non vide
-                if grid[i][j] != 0:
-                    if prev == None:
-                        prev = grid[i][j]
-                    else:
-                        # Tuile à gauche de même taille donc on les additionne
-                        if prev == grid[i][j]:
-                            res[k] = grid[i][j] * 2
-                            k += 1
-                            prev = None
-                        # Sinon on la décale
-                        else:
-                            res[k] = prev
-                            k += 1
-                            prev = grid[i][j]
-            if prev != None:
-                res[k] = prev
-            grid[i] = res
+            new[i] = move_left(grid[i])
     # Droite
     elif y == 1:
         for i in range(len(grid)):
-            res, k, prev = [0, 0, 0, 0], len(grid[i]) - 1, None
-            for j in range(-1, -len(grid[i]) - 1, -1):
-                if grid[i][j] != 0:
-                    if prev == None:
-                        prev = grid[i][j]
-                    else:
-                        if prev == grid[i][j]:
-                            res[k] = grid[i][j] * 2
-                            k -= 1
-                            prev = None
-                        else:
-                            res[k] = prev
-                            k -= 1
-                            prev = grid[i][j]
-            if prev != None:
-                res[k] = prev
-            grid[i] = res
-    # Up - TODO
+            row = grid[i].copy()
+            row.reverse()
+            row = move_left(row)
+            row.reverse()
+            new[i] = row
+    # Up
     elif x == -1:
-        for j in range(len(grid)):
-            temp, comp = False, 0
-            i = 0
-            while i < len(grid):
-                if temp:
-                    comp += 1
-                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
-                    i += 1
-                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp <= 2:
-                        i += 1
-                        temp = False
-                    elif comp > 2:
-                        grid[i - 1][j], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        i += 1
-                    else:
-                        grid[i - 1][j], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        temp = True
-                        i -= 1
-                elif grid_get_next(grid, i, j, d) == 0:
-                    grid[i - 1][j], grid[i][j] = grid[i][j], grid[i - 1][j]
-                    moved = True
-                    i -= 1
-                else:
-                    i += 1
-    # Down - TODO
+        new = reverse(grid)
+        for i in range(len(new)):
+            new[i] = move_left(new[i])
+        new = transpose(new)
+    # Down
     elif x == 1:
-        for j in range(len(grid)):
-            temp, comp = False, 0
-            i = len(grid) - 1
-            while i >= 0:
-                if temp:
-                    comp += 1
-                if grid_get_next(grid, i, j, d) == None or grid_get_value(grid, (i, j)) == 0:
-                    i -= 1
-                elif grid_get_next(grid, i, j, d) == grid_get_value(grid, (i, j)):
-                    if temp and comp <= 2:
-                        i -= 1
-                        temp = False
-                    elif comp > 2:
-                        grid[i + 1][j], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        i -= 1
-                    else:
-                        grid[i + 1][j], grid[i][j] = grid[i][j]*2, 0
-                        moved = True
-                        temp = True
-                        i += 1
-                elif grid_get_next(grid, i, j, d) == 0:
-                    grid[i + 1][j], grid[i][j] = grid[i][j], grid[i + 1][j]
-                    moved = True
-                    i += 1
-                else:
-                    i -= 1
-    return (grid, moved)
-                
+        new = reverse(grid)
+        for i in range(len(new)):
+            row = new[i].copy()
+            row.reverse()
+            row = move_left(row)
+            row.reverse()
+            new[i] = row
+        new = transpose(new)
+    return new
+     
+def move_possible(grid):
+    res = []
+    # right, left, up, down
+    for d in DIRECTIONS.keys():
+        new = grid_move(grid, d)
+        if new == grid:
+            res += [False]
+        else:
+            res += [True]
+    return res
 
 def grid_add_new_tile(grid):
     """
