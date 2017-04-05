@@ -1,7 +1,7 @@
 # 2048
 
 ![](https://img.shields.io/badge/build-not%20working-red.svg)
-![](https://img.shields.io/badge/release-v1.4-brightgreen.svg)
+![](https://img.shields.io/badge/release-v1.5-brightgreen.svg)
 ![](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
