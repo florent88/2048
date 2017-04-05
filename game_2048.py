@@ -38,19 +38,19 @@ def all_value(grid):
             res += [value]
     return res
 
-def grid_print(grid):
+def grid_print(grid,n=4):
     """
     Imprime la grille passée en paramètre
     
     paramètre grid: (list) la grille sous forme de liste
     """
     size_tile = len(str(grid_get_max_value(grid)))
-    print('-'*(5 + size_tile * 4))
+    print('-'*((n+1) + size_tile * n))
     for line in grid:
         for value in line:
             print('|{:{align}{width}}'.format(value, align='^', width=str(size_tile)), end = '')
         print('|')
-        print('-'*(5 + size_tile * 4))
+        print('-'*((n+1) + size_tile * n))
 
 def is_grid_over(grid):
     """

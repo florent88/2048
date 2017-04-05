@@ -9,6 +9,7 @@ grid = None
 gr_grid = []
 finish = False
 lose = False
+n = 4
 
 TILES_BG_COLOR = {2: "#eee4da", 4: "#ede0c8", 8: "#f1b078", \
                   16: "#eb8c52", 32: "#f67c5f", 64: "#f65e3b", \
@@ -26,23 +27,63 @@ TILES_FONT = {"Verdana", 40, "bold"}
 
 GAME_SIZE = 600
 GAME_BG = "#92877d" 
-TILES_SIZE = GAME_SIZE // 4
+TILES_SIZE = GAME_SIZE // n
 
   
 commands = {"Up": "up", "Left": "left", "Right": "right", "Down": "down" }
 
 def new_game():
-    showinfo("Error", "Coming soon")
+    """
+    Créer une nouvelle partie
+    """
+    global grid, lose, finish, n
+    lose, finish = False, False
+    # Nouvelle partie
+    showinfo("New game", "A new game start")
+    grid = grid_init(n)
+    grid_display(grid)
 
 def load_game():
-    showinfo("Error", "Coming soon")
+    """
+    Charge une partie précédemment sauvegardée
+    """
+    global grid, lose, finish
+    try:
+        grid = grid_load("save")
+        lose, finish = False, False
+        showinfo("Load Game", "Your game was successfully load.")
+    except FileNotFoundError:
+        showinfo("Error", "There is no gamed save.")
+    grid_display(grid)
+
+def save_game():
+    """
+    Sauvegarde la partie en cours et ferme le jeu
+    """
+    global grid
+    grid_save(grid, "save")
+    showinfo("Save game", "Your game was successfully save.")
+    fenetre.quit()
 
 def callback():
+    """
+    Demande une dernière vérification avant de quitter le jeu
+    """
     if askyesno("Quit", "Are you sure ?"):
         fenetre.quit()
 
+def score():
+    """
+    Affiche le score de la partie en cours
+    """
+    global grid
+    showinfo("Score", "Your score is "+str(grid_score(grid)))
+    
 def about():
-    showinfo("About", "Blabla")
+    """
+    Affiche les informations du jeu
+    """
+    showinfo("About", "Developped by...")
 
 def main():
     """
@@ -50,20 +91,38 @@ def main():
     
     UC : none
     """
-    global fenetre, gr_grid,grid
+    global fenetre, gr_grid, grid, n
     # Initialisation de la fenetre
     fenetre = Tk()
     fenetre.title('2048')
     fenetre.bind("<Key>", key_pressed)
     fenetre.resizable(False, False)
     fenetre.grid()
+    # Menubar
+    menubar = Menu(fenetre)
+    
+    partie = Menu(menubar, tearoff = 0)
+    partie.add_command(label = "New", command = new_game)
+    partie.add_command(label = "Load", command = load_game)
+    partie.add_command(label = "Save", command = save_game)
+    partie.add_separator()
+    partie.add_command(label = "Quit", command = callback)
+    menubar.add_cascade(label = "Game", menu = partie)
+
+    aide = Menu(menubar, tearoff = 0)
+    aide.add_command(label = "About", command = about)
+    menubar.add_cascade(label = "Help", menu = aide)
+
+    menubar.add_command(label = "Score", command = score)
+    
+    fenetre.config(menu = menubar)
     # Génération de la grille
     background = Frame(fenetre, bg=GAME_BG)
     background.grid()
     gr_grid = []
-    for i in range(4):
+    for i in range(n):
         gr_line = []
-        for j in range(4):
+        for j in range(n):
             cell = Frame(background, bg=TILE_EMPTY_BG, width=TILES_SIZE, height=TILES_SIZE)
             cell.grid(row=i, column=j, padx=1, pady=1)
             t = Label(master = cell, text = "", bg = TILE_EMPTY_BG,
@@ -72,23 +131,8 @@ def main():
             t.grid()
             gr_line.append(t)
         gr_grid.append(gr_line)
-    grid = grid_init()
-    grid_display(grid)
-    # Menubar
-    menubar = Menu(fenetre)
-    
-    partie = Menu(menubar, tearoff = 0)
-    partie.add_command(label = "New", command = new_game)
-    partie.add_command(label = "Load", command = load_game)
-    partie.add_separator()
-    partie.add_command(label = "Quit", command = callback)
-    menubar.add_cascade(label = "Game", menu = partie)
-
-    aide = Menu(menubar, tearoff = 0)
-    aide.add_command(label = "About", command = about)
-    menubar.add_cascade(label = "Help", menu = aide)
-    
-    fenetre.config(menu = menubar)
+    # Début du jeu
+    new_game()
     # Boucle
     fenetre.mainloop()
 
@@ -98,9 +142,9 @@ def grid_display(grid):
     
     UC : none
     """
-    global gr_grid, fenetre
-    for i in range(4):
-        for j in range(4):
+    global gr_grid, fenetre, n
+    for i in range(n):
+        for j in range(n):
             number = grid_get_value(grid, (i, j))
             if number == 0:
                 gr_grid[i][j].configure(text="", bg=TILE_EMPTY_BG)
@@ -117,7 +161,6 @@ def key_pressed(event):
     UC : none
     """
     global fenetre, grid, finish, lose
-    
     key = event.keysym
     # Inutile dès que le jeu est terminé
     if not lose:
@@ -140,6 +183,5 @@ def key_pressed(event):
         
 if __name__ == '__main__':
     import sys
-
     main()
     exit(0)
