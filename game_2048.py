@@ -4,6 +4,9 @@ import random, pickle
 
 VALUE = [2, 2, 2, 2, 2, 2, 2, 4, 4, 4] # 2 plus présent que les 4 (70 - 30)
 DIRECTIONS = {"right": (0,1), "left": (0,-1), "up": (-1,0), "down": (1,0)}
+# Themes
+CHEMISTRY = {0: "", 2: "H", 4: "He", 8: "Li", 16: "Be", 32: "B", 64: "C", 128: "N", 256: "O", 512: "F", 1024: "Ne", 2048: "Na", 4096: "Mg", 8192: "Al"}
+DEFAULT = {0: "", 2: "2", 4: "4", 8: "8", 16: "16", 32: "32", 64: "64", 128: "128", 256: "256", 512: "512", 1024: "1024", 2048: "2048", 4096: "4096", 8192: "8192"}
 
 def grid_init(n=4):
     """
@@ -12,14 +15,14 @@ def grid_init(n=4):
     valeur renvoyée: (list) la grille sous forme de liste
     """
     grid = []
-    # Grille n x n
+    # Grille de taille n x n
     for i in range(n):
         # 0 pour représenter les cases vides
         grid += [list(0 for j in range(n))]
     grid_add_new_tile(grid)
     return grid
 
-def all_value(grid):
+def all_tiles(grid):
     """
     Retourne une liste contenant toutes les valeurs dans la grilles
 
@@ -27,28 +30,38 @@ def all_value(grid):
     valeur renvoyée: (list) une liste contenant toutes les valeurs dans la grille
 
     Exemples:
-    >>> all_value([[0,4,8,2], [0,0,0,0], [0,512,32,64], [1024,2048,512,0]])
+    >>> all_tiles([[0,4,8,2], [0,0,0,0], [0,512,32,64], [1024,2048,512,0]])
     [0, 4, 8, 2, 0, 0, 0, 0, 0, 512, 32, 64, 1024, 2048, 512, 0]
-    >>> all_value([[16,4,8,2], [2,4,2,128], [4,512,32,64], [1024,2048,512,2]])
+    >>> all_tiles([[16,4,8,2], [2,4,2,128], [4,512,32,64], [1024,2048,512,2]])
     [16, 4, 8, 2, 2, 4, 2, 128, 4, 512, 32, 64, 1024, 2048, 512, 2]
     """
     res = []
     for line in grid:
-        for value in line:
-            res += [value]
+        for tile in line:
+            res += [tile]
     return res
 
-def grid_print(grid,n=4):
+def long_value(grid, theme):
+    """
+    Récupère la taille de la plus grande tuile en fonction du theme
+    """
+    length = 0
+    for tile in all_tiles(grid):
+        if len(theme[tile]) > length:
+            length = len(theme[tile])
+    return length
+
+def grid_print(grid, n=4, theme=DEFAULT):
     """
     Imprime la grille passée en paramètre
     
     paramètre grid: (list) la grille sous forme de liste
     """
-    size_tile = len(str(grid_get_max_value(grid)))
+    size_tile = long_value(grid, theme)
     print('-'*((n+1) + size_tile * n))
     for line in grid:
-        for value in line:
-            print('|{:{align}{width}}'.format(value, align='^', width=str(size_tile)), end = '')
+        for tile in line:
+            print('|{:{align}{width}}'.format(theme[tile], align='^', width=str(size_tile)), end = '')
         print('|')
         print('-'*((n+1) + size_tile * n))
 
@@ -65,7 +78,7 @@ def is_grid_over(grid):
     >>> is_grid_over([[16,4,8,2], [2,4,2,128], [4,512,32,64], [1024,2048,512,2]])
     True
     """
-    return not 0 in all_value(grid)
+    return not 0 in all_tiles(grid)
             
 
 def grid_get_max_value(grid):
@@ -81,7 +94,7 @@ def grid_get_max_value(grid):
     >>> grid_get_max_value([[16,4,8,2], [2,4,2,128], [4,512,32,64], [16,0,512,2]])
     512
     """
-    return max(all_value(grid))
+    return max(all_tiles(grid))
 
 def reverse(grid):
     reverse_grid = []
@@ -260,8 +273,8 @@ def grid_score(grid):
     2676
     """
     res = 0
-    for value in all_value(grid):
-        res += value
+    for tile in all_tiles(grid):
+        res += tile
     return res
 
 def grid_save(grid, fname):
