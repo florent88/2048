@@ -4,7 +4,6 @@ from game_2048 import *
 import sys
 
 COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save"}
-ALL_THEMES = {"0": DEFAULT, "1": CHEMISTRY}
 
 def read_next_move():
     """
@@ -24,7 +23,7 @@ def read_gridsize():
     valeur renvoyée: (int) la taille de la grille
     """
     number = input('What grid size do you want to play? (between 3 and 10) ')
-    while int(number) < 3 and int(number) > 10:
+    while int(number) < 3 or 10 < int(number):
         number = input('What grid size do you want to play? (between 3 and 10) ')
     return int(number)
 
@@ -34,22 +33,22 @@ def read_theme():
 
     valeur renvoyée: (str) l'identifiant du theme
     """
-    theme = input('What grid theme do you want? ((0)Default theme, (1)Chemistry theme) ')
-    while theme not in ALL_THEMES:
-        theme = input('What grid theme do you want? ((0)Default theme, (1)Chemistry theme) ')
+    theme = input('What grid theme do you want? ((0)Default, (1)Chemistry, (2)Alphabet) ')
+    while theme not in THEMES:
+        theme = input('What grid theme do you want? ((0)Default, (1)Chemistry, (2)Alphabet) ')
     return theme
     
 
 def play():
-    game = input('Do you want to create a new game or load a game? ((C)harge, (N)ew) ').upper()
-    commande_new = ['N', 'C']
+    game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew) ').upper()
+    commande_new = ['N', 'L']
     while game not in commande_new:
-        game = input('Do you want to create a new game or load a game? ((C)harge, (N)ew) ').upper()
+        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew) ').upper()
     if game == 'N':
         number = read_gridsize()
         grid = grid_init(number)
-        theme = ALL_THEMES[read_theme()]
-    elif game == 'C': 
+        theme = THEMES[read_theme()]
+    elif game == 'L': 
         try:
             grid = grid_load("save")
             number = len(grid)
@@ -58,7 +57,7 @@ def play():
         except FileNotFoundError:
             print("Oops! There is no save file")
             number = read_gridsize()
-            theme = ALL_THEMES[read_theme()]
+            theme = THEMES[read_theme()]
             grid = grid_init(number)
     grid_print(grid, number, theme)
     # Arrêt si la grille est pleine ou aucun mouvements possibles
