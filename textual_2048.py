@@ -3,7 +3,7 @@
 from game_2048 import *
 import sys
 
-commands = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save"}
+COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save"}
 ALL_THEMES = {"0": DEFAULT, "1": CHEMISTRY}
 
 def read_next_move():
@@ -13,7 +13,7 @@ def read_next_move():
     valeur renvoyée: (str) la direction à suivre pour grid_move()
     """
     move =  input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave) ').upper()
-    while move not in commands:
+    while move not in COMMANDS:
         move = input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave) ').upper()
     return move
 
@@ -34,9 +34,9 @@ def read_theme():
 
     valeur renvoyée: (str) l'identifiant du theme
     """
-    theme = input('What grid theme do you want?, ((0)Default theme, (1)Chemistry theme) ')
+    theme = input('What grid theme do you want? ((0)Default theme, (1)Chemistry theme) ')
     while theme not in ALL_THEMES:
-        theme = input('What grid theme do you want?, ((0)Default theme, (1)Chemistry theme) ')
+        theme = input('What grid theme do you want? ((0)Default theme, (1)Chemistry theme) ')
     return theme
     
 
@@ -54,7 +54,7 @@ def play():
             grid = grid_load("save")
             number = len(grid)
             theme = ALL_THEMES[read_theme()]
-            print("Your grid is here!")
+            print("Your save was successfully load")
         except FileNotFoundError:
             print("Oops! There is no save file")
             number = read_gridsize()
@@ -69,7 +69,7 @@ def play():
             grid_save(grid,"save")
             print("Save done")
             sys.exit(1)
-        new_grid  = grid_move(grid, commands[move])
+        new_grid  = grid_move(grid, COMMANDS[move])
         # Pas de déplacement dans la direction d donc on demande une autre direction
         if new_grid == grid:
             continue
@@ -79,10 +79,10 @@ def play():
         # Affichage de la grille
         grid_print(grid, number, theme)
     if grid_get_max_value(grid) == 2048:
-        print("Vous avez gagné !!")
+        print("You win !!")
     else:
-        print("Vous avez perdu...")
-    print("Votre score est de "+str(grid_score(grid))+" points.")
+        print("You lose...")
+    print("Your score is "+str(grid_score(grid)))
 
 if __name__ == '__main__':
     play()

@@ -1,7 +1,7 @@
 # 2048
 
 ![](https://img.shields.io/badge/build-not%20working-red.svg)
-![](https://img.shields.io/badge/release-v1.5-brightgreen.svg)
+![](https://img.shields.io/badge/release-v1.6-brightgreen.svg)
 ![](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
@@ -30,7 +30,7 @@ Graphical version use tkinter, to play with this version, execute `graphical_204
 - [x] Save / Load Game
 - [ ] Theme
 - [ ] Leaderboard
-- [ ] Different grid size
+- [x] Different grid size
 - [ ] Computer play
 
 ![Graphical version](img/graphic.jpg)
