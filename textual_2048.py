@@ -40,14 +40,22 @@ def read_theme():
     
 
 def play():
-    game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew) ').upper()
-    commande_new = ['N', 'L']
+    game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
+    commande_new = ['N', 'L', 'V']
     while game not in commande_new:
-        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew) ').upper()
+        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
+    # Affichage du classement
+    while game == 'V':
+        liste = get_leaderboard("leaderboard")
+        for score, name, size in liste:
+            print(name+" - Score "+str(score)+" - Grille "+str(size)+"x"+str(size))
+        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
+    # Nouvelle partie
     if game == 'N':
         number = read_gridsize()
         grid = grid_init(number)
         theme = THEMES[read_theme()]
+    # Gestion de la partie sauvegardée
     elif game == 'L': 
         try:
             grid = grid_load("save")
@@ -55,10 +63,11 @@ def play():
             theme = ALL_THEMES[read_theme()]
             print("Your save was successfully load")
         except FileNotFoundError:
-            print("Oops! There is no save file")
+            print("Oops! There is no save file, a new game will start")
             number = read_gridsize()
             theme = THEMES[read_theme()]
             grid = grid_init(number)
+    pseudo = input("What is your pseudo ? ")
     grid_print(grid, number, theme)
     # Arrêt si la grille est pleine ou aucun mouvements possibles
     while not is_grid_over(grid) or True in move_possible(grid):
@@ -81,6 +90,8 @@ def play():
         print("You win !!")
     else:
         print("You lose...")
+    # Ajout du score dans le classement
+    add_leaderboard("leaderboard", pseudo, grid_score(grid), number)
     print("Your score is "+str(grid_score(grid)))
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ finish = False
 lose = False
 n = 4
 theme_id = "0"
+pseudo = None
 
 TILES_BG_COLOR = {0: "#9e948a", 2: "#eee4da", 4: "#ede0c8", 8: "#f1b078", \
                   16: "#eb8c52", 32: "#f67c5f", 64: "#f65e3b", \
@@ -41,7 +42,7 @@ def get_center_position(tk, width, height):
 # Création du menu
 root = Tk()
 root.title("2048")
-root.geometry(get_center_position(root, 250, 180))
+root.geometry(get_center_position(root, 250, 215))
 root.resizable(False, False)
 
 def save_game():
@@ -71,10 +72,27 @@ def about():
     showinfo("2048", "Developped by...")
     
 def play():
-    global n, grid, gr_grid, theme_id
+    global n, grid, gr_grid, theme_id, pseudo
+
+    def leaderboard():
+        # Récupération du classement
+        liste = get_leaderboard("leaderboard")
+        # Création du popup
+        win = Toplevel(game)
+        win.title("Leaderboard")
+        win.resizable(False, False)
+        win.geometry(get_center_position(win, 250, 15 + 25*len(liste)))
+        # Affichage du classement
+        for score, name, size in liste:
+            Label(win, text=name+" - Score "+str(score)+" - Grille "+str(size)+"x"+str(size)).pack()
+        button = Button(win, text="Fermer", command=win.destroy).pack(side=BOTTOM, pady=5)
+        # Boucle
+        win.mainloop()
     
     def back():
-        # Destruction de la partie courante
+        global lose, finish
+        lose, finish = False, False
+        # Destruction de la fenetre de la partie
         game.destroy()
         # Agrandissement du menu principal
         root.deiconify()
@@ -109,76 +127,88 @@ def play():
                 # Affichage du message de fin
                 if is_grid_over(grid) and not True in move_possible(grid):
                     showinfo("2048", "You lose !")
+                    # Ajout du score dans le classement
+                    add_leaderboard("leaderboard", pseudo, grid_score(grid), n)
                     lose = True
 
-    # Reduction du menu principal
-    root.withdraw()
-    # Récupération du thème
-    try:
-        theme_id = str(list_theme.curselection()[0])
-    except IndexError:
-        theme_id = "0"
-    # Gestion du fichier sauvegarde
-    if isfile("save"):
-        if askyesno("2048", "A save is detected, do you want to load her ?"):
-            grid = grid_load("save")
-            n = len(grid)
-            # Suppression du fichier sauvegarde
-            remove("save")
+    if len(pseudo_entry.get()) > 0:
+        # Reduction du menu principal
+        root.withdraw()
+        # Récupération du pseudo
+        pseudo = pseudo_entry.get()
+        # Récupération du thème
+        try:
+            theme_id = str(list_theme.curselection()[0])
+        except IndexError:
+            theme_id = "0"
+        # Gestion de la partie sauvegardée
+        if isfile("save"):
+            if askyesno("2048", "A save is detected, do you want to load her ?"):
+                # Récupération de la sauvegarde
+                grid = grid_load("save")
+                n = len(grid)
+                # Suppression du fichier sauvegarde
+                remove("save")
+            else:
+                n = int(spin.get())
+                grid = grid_init(n)
         else:
             n = int(spin.get())
             grid = grid_init(n)
+        # Création de la fenetre pour le jeu
+        game = Toplevel(root)
+        game.title("2048")
+        game.bind("<Key>", key_pressed)
+        game.resizable(False, False)
+        game.grid()
+        # Ajout du menu
+        menubar = Menu(game)
+    
+        partie = Menu(menubar, tearoff = 0)
+        partie.add_command(label = "New", command = back)
+        partie.add_command(label = "Save", command = save_game)
+        partie.add_separator()
+        partie.add_command(label = "Quit", command = quit_game)
+        menubar.add_cascade(label = "Game", menu = partie)
+
+        menubar.add_command(label = "Score", command = score)
+
+        menubar.add_command(label = "Leaderboard", command = leaderboard)
+
+        aide = Menu(menubar, tearoff = 0)
+        aide.add_command(label = "About", command = about)
+        menubar.add_cascade(label = "Help", menu = aide)
+    
+        game.config(menu = menubar)
+        # Génération de la grille de fond
+        background = Frame(game, bg=GAME_BG)
+        background.grid()
+        gr_grid = []
+        for i in range(n):
+            gr_line = []
+            for j in range(n):
+                cell = Frame(background, bg=TILES_BG_COLOR[0], width=TILES_SIZE, height=TILES_SIZE)
+                cell.grid(row=i, column=j, padx=1, pady=1)
+                t = Label(master = cell, text = "", bg = TILES_BG_COLOR[0],
+                          justify = CENTER, font = TILES_FONT,
+                          width=8, height=4)
+                t.grid()
+                gr_line.append(t)
+            gr_grid.append(gr_line)
+        # Affichage de la grille
+        grid_display(grid)
+        # Centrage de la fenetre
+        game.geometry(get_center_position(game, game.winfo_width(), game.winfo_height()))
+        # Boucle de la partie
+        game.mainloop()
     else:
-        n = int(spin.get())
-        grid = grid_init(n)
-    # Création de la partie
-    game = Toplevel(root)
-    game.title("2048")
-    game.bind("<Key>", key_pressed)
-    game.resizable(False, False)
-    game.grid()
-    # Ajout du menu
-    menubar = Menu(game)
-    
-    partie = Menu(menubar, tearoff = 0)
-    partie.add_command(label = "New", command = back)
-    partie.add_command(label = "Save", command = save_game)
-    partie.add_separator()
-    partie.add_command(label = "Quit", command = quit_game)
-    menubar.add_cascade(label = "Game", menu = partie)
-
-    menubar.add_command(label = "Score", command = score)
-
-    aide = Menu(menubar, tearoff = 0)
-    aide.add_command(label = "About", command = about)
-    menubar.add_cascade(label = "Help", menu = aide)
-    
-    game.config(menu = menubar)
-    # Génération de la grille de fond
-    background = Frame(game, bg=GAME_BG)
-    background.grid()
-    gr_grid = []
-    for i in range(n):
-        gr_line = []
-        for j in range(n):
-            cell = Frame(background, bg=TILES_BG_COLOR[0], width=TILES_SIZE, height=TILES_SIZE)
-            cell.grid(row=i, column=j, padx=1, pady=1)
-            t = Label(master = cell, text = "", bg = TILES_BG_COLOR[0],
-                      justify = CENTER, font = TILES_FONT,
-                      width=8, height=4)
-            t.grid()
-            gr_line.append(t)
-        gr_grid.append(gr_line)
-    # Affichage de la grille
-    grid_display(grid)
-    # Centrage de la fenetre
-    game.geometry(get_center_position(game, game.winfo_width(), game.winfo_height()))
-    # Boucle secondaire
-    game.mainloop()
+        showerror("2048", "Please enter a pseudo before play")
 
 # Initialisation des widgets
+label_pseudo = Label(root, text="Choose your pseudo")
+pseudo_entry = Entry(root)
 label = Label(root, text="Choose grid size")
-spin = Spinbox(root, from_=3, to=7)
+spin = Spinbox(root, from_=3, to=8)
 label_theme = Label(root, text="Choose a theme")
 list_theme = Listbox(root, selectmode="single")
 list_theme.config(height=4)
@@ -188,11 +218,13 @@ button_quit = Button(root, text="Quit", command=quit_game)
 for key in THEMES.keys():
     list_theme.insert(key, THEMES[key]["name"])
 # Affichage des widgets
-label.pack(pady=5)
+label_pseudo.pack(pady=5)
+pseudo_entry.pack()
+label.pack()
 spin.pack()
 label_theme.pack()
 list_theme.pack()
 button.pack(side=RIGHT, padx=5, pady=5)
 button_quit.pack(side=LEFT, padx=5, pady=5)
-# Boucle principale
+# Boucle
 root.mainloop()

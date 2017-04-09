@@ -171,7 +171,7 @@ def grid_move(grid, d):
      
 def move_possible(grid):
     res = []
-    # right, left, up, down
+    # [RIGHT, LEFT, UP, DOWN]
     for d in DIRECTIONS.keys():
         new = grid_move(grid, d)
         if new == grid:
@@ -295,6 +295,32 @@ def grid_load(fname):
     with open(fname, 'rb') as file:
         liste = pickle.load(file)
     return liste
+
+def get_leaderboard(fname):
+    try:
+        with open(fname, 'rb') as file:
+            liste = pickle.load(file)
+    except FileNotFoundError:
+        liste = []
+        save_leaderboard(fname, liste)
+    return liste
+
+def save_leaderboard(fname, liste):
+    with open(fname, 'wb') as file:
+        pickle.dump(liste, file)
+
+def add_leaderboard(fname, name, score, size):
+    liste = get_leaderboard(fname)
+    if len(liste) >= 10: 
+        i = 0
+        while i < len(liste):
+            if liste[i][0] <= score:
+                liste[i] = (score, name, size)
+                break
+    else:
+        liste += [(score, name, size)]
+        liste.sort(reverse=True)
+    save_leaderboard(fname, liste)
 
 if __name__ == '__main__':
     import doctest
