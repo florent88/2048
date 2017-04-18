@@ -12,6 +12,8 @@ lose = False
 n = 4
 theme_id = "0"
 pseudo = None
+undo = 2
+last_grid = None
 
 TILES_BG_COLOR = {0: "#9e948a", 2: "#eee4da", 4: "#ede0c8", 8: "#f1b078", \
                   16: "#eb8c52", 32: "#f67c5f", 64: "#f65e3b", \
@@ -30,22 +32,22 @@ GAME_SIZE = 600
 GAME_BG = "#92877d" 
 TILES_SIZE = GAME_SIZE // n
 
-commands = {"Up": "up", "Left": "left", "Right": "right", "Down": "down" }
+COMMANDS = {"Up": "up", "Left": "left", "Right": "right", "Down": "down"}
 
 def get_center_position(tk, width, height):
+    """
+    Retourne la position du milieu de l'écran en fonction de la taille de ma fenetre et de ses dimensions
+    """
     screen_width = tk.winfo_screenwidth()
     screen_height = tk.winfo_screenheight()
     x = screen_width//2 - width//2
     y = screen_height//2 - height//2
     return "{}x{}+{}+{}".format(width, height, x, y)
 
-# Création du menu
-root = Tk()
-root.title("2048")
-root.geometry(get_center_position(root, 250, 215))
-root.resizable(False, False)
-
 def save_game():
+    """
+    Sauvegarde la partie en cours
+    """
     global grid
     grid_save(grid, "save")
     showinfo("2048", "Your game was successfully save.")
@@ -70,8 +72,17 @@ def about():
     Affiche les informations du jeu
     """
     showinfo("2048", "Developped by...")
+
+def commands():
+    """
+    Affiche les commandes du jeu
+    """
+    showinfo("2048", "Use directional arrows to move the grid and obtain the 2048 tile")
     
 def play():
+    """
+    Lancement de la partie
+    """
     global n, grid, gr_grid, theme_id, pseudo
 
     def leaderboard():
@@ -81,7 +92,7 @@ def play():
         win = Toplevel(game)
         win.title("Leaderboard")
         win.resizable(False, False)
-        win.geometry(get_center_position(win, 250, 15 + 25*len(liste)))
+        win.geometry(get_center_position(win, 250, 35 + 17*len(liste)))
         # Affichage du classement
         for score, name, size in liste:
             Label(win, text=name+" - Score "+str(score)+" - Grille "+str(size)+"x"+str(size)).pack()
@@ -90,8 +101,8 @@ def play():
         win.mainloop()
     
     def back():
-        global lose, finish
-        lose, finish = False, False
+        global lose, finish, undo, last_grid
+        lose, finish, undo, last_grid = False, False, 2, None
         # Destruction de la fenetre de la partie
         game.destroy()
         # Agrandissement du menu principal
@@ -108,15 +119,15 @@ def play():
         game.update_idletasks()
 
     def key_pressed(event):
-        global grid, finish, lose
+        global grid, finish, lose, last_grid
         key = event.keysym
         # Inutile dès que l'utilisateur a perdu
         if not lose:
-            if key in commands:
-                new_grid = grid_move(grid, commands[key])
+            if key in COMMANDS:
+                new_grid = grid_move(grid, COMMANDS[key])
                 # Tant qu'un mouvement est possible on continuer à jouer
                 if grid != new_grid and (not is_grid_over(grid) or True in move_possible(grid)):
-                    grid = new_grid
+                    grid, last_grid = new_grid, grid
                     grid_add_new_tile(grid)
                 # Refresh de l'interface
                 grid_display(grid)
@@ -131,6 +142,20 @@ def play():
                     add_leaderboard("leaderboard", pseudo, grid_score(grid), n)
                     lose = True
 
+    def last_move():
+        global undo, grid, last_grid
+        if not last_grid is None and last_grid != grid:
+            if undo > 0:
+                undo -= 1
+                # Remplacement et refresh de l'affichage
+                grid = last_grid
+                grid_display(grid)
+                showinfo("2048", "Success.\n"+str(undo)+" undo left.")
+            else:
+                showerror("2048", "You spent all your undo")
+        else:
+            showerror("2048", "There is no move to replace")
+
     if len(pseudo_entry.get()) > 0:
         # Reduction du menu principal
         root.withdraw()
@@ -139,6 +164,7 @@ def play():
         # Récupération du thème
         try:
             theme_id = str(list_theme.curselection()[0])
+        # Aucune séléction donc thème par défault
         except IndexError:
             theme_id = "0"
         # Gestion de la partie sauvegardée
@@ -171,12 +197,15 @@ def play():
         partie.add_command(label = "Quit", command = quit_game)
         menubar.add_cascade(label = "Game", menu = partie)
 
+        menubar.add_command(label = "Undo", command = last_move)
+
         menubar.add_command(label = "Score", command = score)
 
         menubar.add_command(label = "Leaderboard", command = leaderboard)
 
         aide = Menu(menubar, tearoff = 0)
         aide.add_command(label = "About", command = about)
+        aide.add_command(label = "Commands", command = commands)
         menubar.add_cascade(label = "Help", menu = aide)
     
         game.config(menu = menubar)
@@ -203,12 +232,17 @@ def play():
         game.mainloop()
     else:
         showerror("2048", "Please enter a pseudo before play")
-
+        
+# Création du menu
+root = Tk()
+root.title("2048")
+root.geometry(get_center_position(root, 250, 215))
+root.resizable(False, False)
 # Initialisation des widgets
 label_pseudo = Label(root, text="Choose your pseudo")
 pseudo_entry = Entry(root)
 label = Label(root, text="Choose grid size")
-spin = Spinbox(root, from_=3, to=8)
+spin = Spinbox(root, from_=4, to=8)
 label_theme = Label(root, text="Choose a theme")
 list_theme = Listbox(root, selectmode="single")
 list_theme.config(height=4)

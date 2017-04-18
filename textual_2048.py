@@ -1,9 +1,7 @@
-# Module idle 2048
-
 from game_2048 import *
 import sys
 
-COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save"}
+COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save", "B": "back"}
 
 def read_next_move():
     """
@@ -73,10 +71,14 @@ def play():
     while not is_grid_over(grid) or True in move_possible(grid):
         # Lecture de la direction souhaitée
         move = read_next_move()
+        # Sauvegarde de la partie
         if move == "S":
             grid_save(grid,"save")
             print("Save done")
             sys.exit(1)
+        # Retour arrière
+        elif move == "B":
+            continue
         new_grid  = grid_move(grid, COMMANDS[move])
         # Pas de déplacement dans la direction d donc on demande une autre direction
         if new_grid == grid:
@@ -86,7 +88,7 @@ def play():
         grid_add_new_tile(grid)
         # Affichage de la grille
         grid_print(grid, number, theme)
-    if grid_get_max_value(grid) == 2048:
+    if grid_get_max_value(grid) >= 2048:
         print("You win !!")
     else:
         print("You lose...")
