@@ -1,5 +1,6 @@
 from game_2048 import *
 import sys
+from os import remove
 
 COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save", "B": "back"}
 
@@ -9,9 +10,9 @@ def read_next_move():
 
     valeur renvoyée: (str) la direction à suivre pour grid_move()
     """
-    move =  input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave) ').upper()
+    move =  input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack) ').upper()
     while move not in COMMANDS:
-        move = input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave) ').upper()
+        move = input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack) ').upper()
     return move
 
 def read_gridsize():
@@ -38,6 +39,8 @@ def read_theme():
     
 
 def play():
+    last_grid = None
+    undo = 2
     game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
     commande_new = ['N', 'L', 'V']
     while game not in commande_new:
@@ -60,6 +63,7 @@ def play():
             number = len(grid)
             theme = ALL_THEMES[read_theme()]
             print("Your save was successfully load")
+            remove("save")
         except FileNotFoundError:
             print("Oops! There is no save file, a new game will start")
             number = read_gridsize()
@@ -67,7 +71,7 @@ def play():
             grid = grid_init(number)
     pseudo = input("What is your pseudo ? ")
     grid_print(grid, number, theme)
-    # Arrêt si la grille est pleine ou aucun mouvements possibles
+    # Arrêt si la grille est pleine ou aucun mouvement possible
     while not is_grid_over(grid) or True in move_possible(grid):
         # Lecture de la direction souhaitée
         move = read_next_move()
@@ -78,12 +82,22 @@ def play():
             sys.exit(1)
         # Retour arrière
         elif move == "B":
+            if last_grid is not None and last_grid != grid:
+                if undo > 0:
+                    undo -= 1
+                    grid = last_grid
+                    print("Success. "+str(undo)+" undo left")
+                else:
+                    print("You spent all your undo")
+            else:
+                print("There is no move to replace")
+            grid_print(grid, number, theme)
             continue
         new_grid  = grid_move(grid, COMMANDS[move])
         # Pas de déplacement dans la direction d donc on demande une autre direction
         if new_grid == grid:
             continue
-        grid = new_grid
+        grid, last_grid = new_grid, grid
         # Ajout d'une nouvelle tuile
         grid_add_new_tile(grid)
         # Affichage de la grille

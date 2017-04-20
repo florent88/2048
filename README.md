@@ -1,7 +1,7 @@
 # 2048
 
 ![Build](https://img.shields.io/badge/build-passing-green.svg)
-![Release](https://img.shields.io/badge/release-v2.1-orange.svg)
+![Release](https://img.shields.io/badge/release-v2.2-orange.svg)
 ![Python](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
@@ -19,7 +19,7 @@ To play with this version, execute `textual_2048.py` file in Idle
 - [x] Theme
 - [x] Leaderboard
 - [x] Different grid size
-- [ ] Undo action
+- [x] Undo action
 - [ ] Computer play
 - [ ] Application
 

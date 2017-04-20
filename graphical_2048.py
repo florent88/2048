@@ -190,25 +190,25 @@ def play():
         # Ajout du menu
         menubar = Menu(game)
     
-        partie = Menu(menubar, tearoff = 0)
-        partie.add_command(label = "New", command = back)
-        partie.add_command(label = "Save", command = save_game)
+        partie = Menu(menubar, tearoff=0)
+        partie.add_command(label="New", command=back)
+        partie.add_command(label="Save", command=save_game)
         partie.add_separator()
-        partie.add_command(label = "Quit", command = quit_game)
-        menubar.add_cascade(label = "Game", menu = partie)
+        partie.add_command(label="Quit", command=quit_game)
+        menubar.add_cascade(label="Game", menu=partie)
 
-        menubar.add_command(label = "Undo", command = last_move)
+        menubar.add_command(label="Undo", command=last_move)
 
-        menubar.add_command(label = "Score", command = score)
+        menubar.add_command(label="Score", command=score)
 
-        menubar.add_command(label = "Leaderboard", command = leaderboard)
+        menubar.add_command(label="Leaderboard", command=leaderboard)
 
-        aide = Menu(menubar, tearoff = 0)
-        aide.add_command(label = "About", command = about)
-        aide.add_command(label = "Commands", command = commands)
-        menubar.add_cascade(label = "Help", menu = aide)
+        aide = Menu(menubar, tearoff=0)
+        aide.add_command(label="About", command=about)
+        aide.add_command(label="Commands", command=commands)
+        menubar.add_cascade(label="Help", menu=aide)
     
-        game.config(menu = menubar)
+        game.config(menu=menubar)
         # Génération de la grille de fond
         background = Frame(game, bg=GAME_BG)
         background.grid()
@@ -218,8 +218,8 @@ def play():
             for j in range(n):
                 cell = Frame(background, bg=TILES_BG_COLOR[0], width=TILES_SIZE, height=TILES_SIZE)
                 cell.grid(row=i, column=j, padx=1, pady=1)
-                t = Label(master = cell, text = "", bg = TILES_BG_COLOR[0],
-                          justify = CENTER, font = TILES_FONT,
+                t = Label(master=cell, text="", bg=TILES_BG_COLOR[0], \
+                          justify=CENTER, font=TILES_FONT, \
                           width=8, height=4)
                 t.grid()
                 gr_line.append(t)
