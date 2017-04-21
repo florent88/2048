@@ -48,6 +48,7 @@ def play():
     # Affichage du classement
     while game == 'V':
         liste = get_leaderboard("leaderboard")
+        print("Leaderboard:")
         for score, name, size in liste:
             print(name+" - Score "+str(score)+" - Grille "+str(size)+"x"+str(size))
         game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
@@ -108,7 +109,9 @@ def play():
         print("You lose...")
     # Ajout du score dans le classement
     add_leaderboard("leaderboard", pseudo, grid_score(grid), number)
+    # Fin de la partie
     print("Your score is "+str(grid_score(grid)))
+    print("Please restart the program to play a new game")
 
 if __name__ == '__main__':
     play()
