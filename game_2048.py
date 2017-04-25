@@ -1,8 +1,6 @@
-# Module game 2048
-
 import random, pickle
 
-VALUE = [2, 2, 2, 2, 2, 2, 2, 4, 4, 4] # 2 plus présent que les 4 (70 - 30)
+VALUE = [2, 2, 2, 2, 2, 2, 2, 4, 4, 4] # 2 plus présent que les 4 (70% - 30%)
 DIRECTIONS = {"right": (0,1), "left": (0,-1), "up": (-1,0), "down": (1,0)}
 # Themes disponibles (0 Default, 1 Chemistry, 2 Alphabet)
 THEMES = {"0": {"name": "Default", 0: "", 2: "2", 4: "4", 8: "8", 16: "16", 32: "32", 64: "64", 128: "128", 256: "256", 512: "512", 1024: "1024", 2048: "2048", 4096: "4096", 8192: "8192"}, "1": {"name": "Chemistry", 0: "", 2: "H", 4: "He", 8: "Li", 16: "Be", 32: "B", 64: "C", 128: "N", 256: "O", 512: "F", 1024: "Ne", 2048: "Na", 4096: "Mg", 8192: "Al"}, "2": {"name": "Alphabet", 0: "", 2: "A", 4: "B", 8: "C", 16: "D", 32: "E", 64: "F", 128: "G", 256: "H", 512: "I", 1024: "J", 2048: "K", 4096: "L", 8192: "M"}}
@@ -17,7 +15,8 @@ def grid_init(n=4):
     # Grille de taille n x n
     for i in range(n):
         # 0 pour représenter les cases vides
-        grid += [list(0 for j in range(n))]
+        grid.append([0 for j in range(n)])
+    # Ajout d'une tuile
     grid_add_new_tile(grid)
     return grid
 
@@ -35,8 +34,8 @@ def all_tiles(grid):
     [16, 4, 8, 2, 2, 4, 2, 128, 4, 512, 32, 64, 1024, 2048, 512, 2]
     """
     res = []
-    for line in grid:
-        for tile in line:
+    for row in grid:
+        for tile in row:
             res += [tile]
     return res
 
@@ -58,8 +57,8 @@ def grid_print(grid, n=4, theme=THEMES["0"]):
     """
     size_tile = long_value(grid, theme)
     print('-'*((n+1) + size_tile * n))
-    for line in grid:
-        for tile in line:
+    for row in grid:
+        for tile in row:
             print('|{:{align}{width}}'.format(theme[tile], align='^', width=str(size_tile)), end = '')
         print('|')
         print('-'*((n+1) + size_tile * n))
@@ -94,12 +93,6 @@ def grid_get_max_value(grid):
     512
     """
     return max(all_tiles(grid))
-
-def reverse(grid):
-    reverse_grid = []
-    for j in range(len(grid)):
-        reverse_grid.append([grid[i][j] for i in range(len(grid))])
-    return reverse_grid
 
 def transpose(reverse_grid):
     grid = []
@@ -153,13 +146,13 @@ def grid_move(grid, d):
             new[i] = row
     # Up
     elif x == -1:
-        new = reverse(grid)
+        new = transpose(grid)
         for i in range(len(new)):
             new[i] = move_left(new[i])
         new = transpose(new)
     # Down
     elif x == 1:
-        new = reverse(grid)
+        new = transpose(grid)
         for i in range(len(new)):
             row = new[i].copy()
             row.reverse()
@@ -197,24 +190,24 @@ def get_new_position(grid):
     paramètre grid: (list) la grille sous forme de liste
     valeur renvoyée: (tuple) un couple de coordonnée d'une tuile vide
     """
-    liste = []
+    empty_tile = []
     for x in range(len(grid)):
         for y in range(len(grid[x])):
             if grid_get_value(grid, (x, y)) == 0:
-                liste += [(x, y)]
-    return random.choice(liste)
+                empty_tile += [(x, y)]
+    return random.choice(empty_tile)
 
 def grid_get_value(grid, coord):
     """
     Retourne la valeur de la tuile possédant les coordonnées dans le couple
 
     paramètre grid: (list) la grille sous forme de liste
-    paramètre coord: (tuple) un couple de coordonnée
+    paramètre coord: (tuple) un couple de coordonnée (x, y)
     valeur renvoyée: (int) la valeur de la tuile possédant les coordonnées du couple, None sinon
 
     Exemples:
     >>> grid = [[0, 2, 4, 0], [2048, 512, 32, 0], [16, 32, 0, 4], [0, 0, 128, 254]]
-    >>> grid_get_value(grid, (4, 4)) == None
+    >>> grid_get_value(grid, (4, 4)) is None
     True
     >>> grid_get_value(grid, (1, 0))
     2048
@@ -271,10 +264,10 @@ def grid_score(grid):
     >>> grid_score(grid_2)
     2676
     """
-    res = 0
+    score = 0
     for tile in all_tiles(grid):
-        res += tile
-    return res
+        score += tile
+    return score
 
 def grid_save(grid, fname):
     """

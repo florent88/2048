@@ -1,7 +1,7 @@
 # 2048
 
 ![Build](https://img.shields.io/badge/build-passing-green.svg)
-![Release](https://img.shields.io/badge/release-v3.0-orange.svg)
+![Release](https://img.shields.io/badge/release-v3.1-orange.svg)
 ![Python](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction

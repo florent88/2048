@@ -143,8 +143,8 @@ def play():
                     lose = True
 
     def last_move():
-        global undo, grid, last_grid
-        if not last_grid is None and last_grid != grid:
+        global undo, grid, last_grid, lose
+        if not last_grid is None and last_grid != grid and not lose:
             if undo > 0:
                 undo -= 1
                 # Remplacement et refresh de l'affichage
