@@ -1,0 +1,10 @@
+﻿Manuel d'utilisation
+
+
+
+Il y a deux versions disponibles, une version graphique utilisant le module Tkinter (Seulement pour des version de python supérieur à 3) 
+et une version utlisant la console ou Idle. Pour lancer chacunes de ces deux versions, il faut tout d'abord ouvrir leur script dans Idle 
+puis le lancer grâce la commande Execute
+(Raccourci F5), la partie se lance automatiquement.
+
+Concernant la version texte, pour relancer une partie, il vous faut relancer le script.

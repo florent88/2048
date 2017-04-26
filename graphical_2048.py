@@ -86,6 +86,9 @@ def play():
     global n, grid, gr_grid, theme_id, pseudo
 
     def leaderboard():
+        """
+        Affiche un popup affichant le classement
+        """
         # Récupération du classement
         liste = get_leaderboard("leaderboard")
         # Création du popup
@@ -101,6 +104,9 @@ def play():
         win.mainloop()
     
     def back():
+        """
+        Retour au menu principal
+        """
         global lose, finish, undo, last_grid
         lose, finish, undo, last_grid = False, False, 2, None
         # Destruction de la fenetre de la partie
@@ -109,6 +115,9 @@ def play():
         root.deiconify()
 
     def grid_display(grid):
+        """
+        Affiche de la grille
+        """
         global n, gr_grid, theme_id
         for i in range(n):
             for j in range(n):
@@ -143,6 +152,9 @@ def play():
                     lose = True
 
     def last_move():
+        """
+        Gestion des retours en arrière
+        """
         global undo, grid, last_grid, lose
         if not last_grid is None and last_grid != grid and not lose:
             if undo > 0:
