@@ -1,7 +1,7 @@
 # 2048
 
 ![Build](https://img.shields.io/badge/build-passing-green.svg)
-![Release](https://img.shields.io/badge/release-v3.2-orange.svg)
+![Release](https://img.shields.io/badge/release-v4.0-orange.svg)
 ![Python](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
@@ -35,7 +35,7 @@ Graphical version use tkinter library, to play with this version, execute `graph
 - [x] Leaderboard
 - [x] Different grid size
 - [x] Undo action
-- [ ] Computer play
+- [x] Computer play
 
 ![Graphical version](img/graphic/menu.jpg)
 
