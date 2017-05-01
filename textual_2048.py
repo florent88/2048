@@ -1,8 +1,9 @@
 from game_2048 import *
-import sys
+import time
 from os import remove
+from ai_2048 import *
 
-COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save", "B": "back"}
+COMMANDS = {"U": "up", "L": "left", "R": "right", "D": "down", "S": "save", "B": "back", "H": "hint"}
 
 def read_next_move():
     """
@@ -10,9 +11,9 @@ def read_next_move():
 
     valeur renvoyée: (str) la direction à suivre pour grid_move()
     """
-    move =  input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack) ').upper()
+    move =  input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack, (H)int) ').upper()
     while move not in COMMANDS:
-        move = input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack) ').upper()
+        move = input('Your Move ? ((U)p, (D)own, (L)eft, (R)ight, (S)ave, (B)ack, (H)int) ').upper()
     return move
 
 def read_gridsize():
@@ -36,22 +37,51 @@ def read_theme():
     while theme not in THEMES:
         theme = input('What grid theme do you want? ((0)Default, (1)Chemistry, (2)Alphabet) ')
     return theme
-    
+
+def autoplay():
+    """
+    Lancement de la partie avec l'ordinateur qui joue à la place du joueur
+    """
+    n = read_gridsize()
+    theme = THEMES[read_theme()]
+    grid = grid_init(n)
+    while not is_grid_over(grid) or True in move_possible(grid):
+        # Evaluation de la grille
+        move, evaluation = grid_max(grid)
+        # Application de l'evaluation
+        grid = grid_move(grid, move)
+        # Ajout d'une nouvelle tuile
+        grid_add_new_tile(grid)
+        # Affichage de la grille et du mouvement effectue
+        print(move)
+        grid_print(grid, n, theme)
+        # Pause de 700ms
+        time.sleep(0.7)
+    if grid_get_max_value(grid) >= 2048:
+        print("Computer won !")
+    else:
+        print("Computer lose !")
+    print("Score is "+str(grid_score(grid)))
+    print("Please restart the program to play a new game")
 
 def play():
+    """
+    Lancement de la partie
+    """
     last_grid = None
     undo = 2
-    game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
-    commande_new = ['N', 'L', 'V']
+    hint = 2
+    game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard, (C)omputer play) ').upper()
+    commande_new = ['N', 'L', 'V', 'C']
     while game not in commande_new:
-        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
+        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard, (C)omputer play) ').upper()
     # Affichage du classement
     while game == 'V':
         liste = get_leaderboard("leaderboard")
         print("Leaderboard:")
         for score, name, size in liste:
             print(name+" - Score "+str(score)+" - Grille "+str(size)+"x"+str(size))
-        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard) ').upper()
+        game = input('Do you want to create a new game or load a game? ((L)oad, (N)ew, (V)iew Leaderboard, (C)omputer play) ').upper()
     # Nouvelle partie
     if game == 'N':
         number = read_gridsize()
@@ -62,14 +92,17 @@ def play():
         try:
             grid = grid_load("save")
             number = len(grid)
-            theme = ALL_THEMES[read_theme()]
-            print("Your save was successfully load")
+            theme = THEMES[read_theme()]
+            print("Your game was successfully load")
             remove("save")
         except FileNotFoundError:
             print("Oops! There is no save file, a new game will start")
             number = read_gridsize()
             theme = THEMES[read_theme()]
             grid = grid_init(number)
+    elif game == "C":
+        autoplay()
+        exit(1)
     pseudo = input("What is your pseudo ? ")
     grid_print(grid, number, theme)
     # Arrêt si la grille est pleine ou aucun mouvement possible
@@ -80,7 +113,7 @@ def play():
         if move == "S":
             grid_save(grid,"save")
             print("Save done")
-            sys.exit(1)
+            exit(1)
         # Retour arrière
         elif move == "B":
             if last_grid is not None and last_grid != grid:
@@ -89,10 +122,18 @@ def play():
                     grid = last_grid
                     print("Success. "+str(undo)+" undo left")
                 else:
-                    print("You spent all your undo")
+                    print("No more undo available")
             else:
                 print("There is no move to replace")
             grid_print(grid, number, theme)
+            continue
+        elif move == "H":
+            if hint > 0:
+                best_move, evaluation = grid_max(grid)
+                hint -= 1
+                print("The best move is "+best_move+". "+str(hint)+" hint left")
+            else:
+                print("No more hint available")
             continue
         new_grid  = grid_move(grid, COMMANDS[move])
         # Pas de déplacement dans la direction d donc on demande une autre direction

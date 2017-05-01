@@ -16,7 +16,7 @@ def grid_evaluate(grid):
     # Horizontal
     for y in range(len(grid)):
         x = 0
-    return regularity + score + max_tile + 50 * number_empty_tiles
+    return regularity + score + max_tile + 32 * number_empty_tiles
 
 def grid_max(grid):
     """
@@ -25,13 +25,14 @@ def grid_max(grid):
     paramètre grid: (list) la grille sous forme de liste
     valeur renvoyée: (tuple) un couple (direction, point) indiquant le meilleur mouvement
     """
-    score = 0
-    best = None
+    best_score = 0
+    best_move = None
     for move in DIRECTIONS.keys():
-        new_grid = grid_move(grid.copy(), move)
+        new_grid = grid_move(grid, move)
         if new_grid == grid:
             continue
-        new_score = grid_evaluate(new_grid)
-        if new_score > score:
-            score, best = new_score, move
-    return (move, score)
+        else:
+            new_score = grid_evaluate(new_grid)
+        if new_score > best_score:
+            best_score, best_move = new_score, move
+    return (best_move, best_score)

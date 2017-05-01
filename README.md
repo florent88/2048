@@ -1,7 +1,7 @@
 # 2048
 
 ![Build](https://img.shields.io/badge/build-passing-green.svg)
-![Release](https://img.shields.io/badge/release-v4.0-orange.svg)
+![Release](https://img.shields.io/badge/release-v4.1-orange.svg)
 ![Python](https://img.shields.io/badge/python-3.X-blue.svg)
 
 ## Introduction
@@ -20,7 +20,8 @@ To play with this version, execute `textual_2048.py` file in Idle
 - [x] Leaderboard
 - [x] Different grid size
 - [x] Undo action
-- [ ] Computer play
+- [x] Hint
+- [x] Computer play
 
 ![Textual version](img/textual/menu.jpg)
 
@@ -35,6 +36,7 @@ Graphical version use tkinter library, to play with this version, execute `graph
 - [x] Leaderboard
 - [x] Different grid size
 - [x] Undo action
+- [x] Hint
 - [x] Computer play
 
 ![Graphical version](img/graphic/menu.jpg)

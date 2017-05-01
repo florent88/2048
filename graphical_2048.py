@@ -3,7 +3,7 @@ from tkinter.messagebox import *
 from game_2048 import *
 from os.path import *
 from os import remove
-from ia_2048 import *
+from ai_2048 import *
 
 grid = None
 gr_grid = []
@@ -336,16 +336,21 @@ def autoplay():
             gr_line.append(t)
         gr_grid.append(gr_line)
     grid_display(grid)
-    game.geometry(get_center_position(game, game.winfo_width(), game.winfo_height()))
     while not is_grid_over(grid) or True in move_possible(grid):
         # Evaluation de la grille
         move, evaluation = grid_max(grid)
         # Déplacement selon l'evaluation
+        print(move)
         grid = grid_move(grid, move)
         # Ajout d'une nouvelle tuile
         grid_add_new_tile(grid)
         # Pause de 500ms puis refresh de l'interface
         game.after(500, grid_display(grid))
+    if grid_get_max_value(grid) >= 2048:
+        showinfo("2048", "Computer won !")
+    else:
+        showinfo("2048", "Computer lose !")
+    game.geometry(get_center_position(game, game.winfo_width(), game.winfo_height()))
     game.mainloop()
         
 # Creation du menu
