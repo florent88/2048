@@ -1,43 +1,48 @@
-# 2048
-
-![Build](https://img.shields.io/badge/build-passing-green.svg)
-![Release](https://img.shields.io/badge/release-v4.1-orange.svg)
-![Python](https://img.shields.io/badge/python-3.X-blue.svg)
+<p align="center"><img src="img/logo.png"></p>
 
 ## Introduction
-Reproduction of 2048 mobile game with [Python3](https://www.python.org/downloads/)
+Reproduction du jeu mobile 2048 en utilisant [Python](https://www.python.org/downloads/).
 
-Built for a school project
+Réalisé dans un but scolaire.
 
-Only for personal use
+Seulement pour une utilisation personnelle.
 
-## Textual version
-To play with this version, execute `textual_2048.py` file in Idle
-- [x] Basic game
+## Manuel
+Il y a deux versions disponibles, une version graphique utilisant le module Tkinter (Seulement pour des versions de Python supérieur à 3) 
+et une version utlisant la console ou Idle. Pour lancer chacunes de ces deux versions, il faut tout d'abord ouvrir leur script dans Idle 
+puis le lancer grâce la commande Execute
+(Raccourci F5), la partie se lance automatiquement.
+
+Concernant la version texte, pour relancer une partie, il vous faut relancer le script.
+
+## Version "Console"
+Pour jouer avec cette version, lancer le script `textual_2048.py` dans Idle.
+#### Fonctionnalités
+- [x] Jeu de base
 - [x] Score
-- [x] Save / Load Game
-- [x] Theme
-- [x] Leaderboard
-- [x] Different grid size
-- [x] Undo action
-- [x] Hint
-- [x] Computer play
+- [x] Sauvegarder / Charger une partie
+- [x] Choix du thème
+- [x] Classements
+- [x] Différentes tailles de grilles
+- [x] Retours arrières
+- [x] Astuces
+- [x] Jeu avec l'ordinateur
 
 ![Textual version](img/textual/menu.jpg)
 
 ![Textual version](img/textual/theme.jpg)
 
-## Graphical version
-Graphical version use tkinter library, to play with this version, execute `graphical_2048.py` file in Idle
-- [x] Basic game
+## Version graphique
+Pour jouer avec cette version, lancer le script `graphical_2048.py` dans Idle.
+- [x] Jeu de base
 - [x] Score
-- [x] Save / Load Game
-- [x] Theme
-- [x] Leaderboard
-- [x] Different grid size
-- [x] Undo action
-- [x] Hint
-- [x] Computer play
+- [x] Sauvegarder / Charger une partie
+- [x] Choix du thème
+- [x] Classements
+- [x] Différentes tailles de grilles
+- [x] Retours arrières
+- [x] Astuces
+- [x] Jeu avec l'ordinateur
 
 ![Graphical version](img/graphic/menu.jpg)
 
